@@ -1,1 +1,58 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Вопрос {{ qid + 1 }}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <script>
+        let timeLeft = 30;  // ⏱️ 時間（秒）
+        let timer;
+
+        function updateTimer() {
+            document.getElementById("timer").innerText = `Осталось времени: ${timeLeft} секунд`;
+            if (timeLeft <= 0) {
+                document.getElementById("quiz-form").submit();  // 自動送信
+            } else {
+                timeLeft--;
+                timer = setTimeout(updateTimer, 1000);
+            }
+        }
+
+        window.onload = updateTimer;
+    </script>
+</head>
+<body>
+<div class="container">
+    <h2>Вопрос {{ qid + 1 }} из {{ total }}</h2>
+    <p>{{ question['text'] }}</p>
+
+    <div id="timer" style="font-weight: bold; margin-bottom: 15px; color: darkred;"></div>
+
+    <form method="POST" id="quiz-form">
+        {% for opt in question['options'] %}
+        <label>
+            <input type="radio" name="answer" value="{{ opt['text'] }}"
+                   {% if selected == opt['text'] %}checked{% endif %}>
+            {{ opt['text'] }}
+        </label><br>
+        {% endfor %}
+        <button type="submit">Проверить</button>
+    </form>
+
+    {% if selected %}
+    <div class="feedback {% if is_correct %}correct{% else %}incorrect{% endif %}">
+        {% if is_correct %}
+            ✅ Верно!
+        {% else %}
+            ❌ Неверно. Правильный ответ:
+            {{ question['options'] | selectattr("correct") | map(attribute="text") | join(", ") }}
+        {% endif %}
+    </div>
+    <form action="{{ url_for('quiz', qid=qid + 1) }}" method="get">
+        <button type="submit">Следующий вопрос</button>
+    </form>
+    {% endif %}
+</div>
+</body>
+</html>
 
