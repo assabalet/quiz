@@ -1,7 +1,7 @@
 from flask import Flask, render_template, request, redirect, url_for, session
 from question_parser import parse_questions
 import random
- import os
+import os  # ← スペースを削除して正しい位置に！
 
 app = Flask(__name__)
 app.secret_key = 'your_secret_key'
@@ -64,11 +64,7 @@ def result():
     всего = len(QUESTIONS)
     return render_template('result.html', correct=правильных, total=всего)
 
+# ✅ Render 用の正しい起動コマンド
 if __name__ == '__main__':
-    app.run(debug=True)
-   
-
-if __name__ == '__main__':
-    port = int(os.environ.get("PORT", 10000))  # Render が動的に割り当てるポート
+    port = int(os.environ.get("PORT", 10000))
     app.run(host='0.0.0.0', port=port)
-
